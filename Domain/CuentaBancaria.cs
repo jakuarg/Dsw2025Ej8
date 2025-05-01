@@ -4,11 +4,11 @@ public class CuentaBancaria
 {
     public TipoCuenta _tipo { get; private set; }
     public string _numero { get; private set; }
-    public decimal _saldo { get;private set; }
+    public decimal _saldo { get; set; }
     public Estado _estado { get; private set; }
-    public decimal _tasaDeInteres { get; private set; }
-    public decimal _limiteDeDescubierto { get; private set; }
-    public decimal _comision { get; private set; }
+    public decimal _tasaDeInteres { get; set; }
+    public decimal _limiteDeDescubierto { get; set; }
+    public decimal _comision { get; set; }
     public string[] _titulares { get; private set; }
 
     public CuentaBancaria(string numero, decimal saldo, TipoCuenta tipo, string[] titulares)
@@ -80,43 +80,78 @@ public class CuentaBancaria
     }
     #endregion*/
 
-    public void Depositar(decimal monto)
-    {
-        if (_tipo == TipoCuenta.CajaDeAhorro)
-        {
-            _saldo += monto;
-        }
-        else if (_tipo == TipoCuenta.CuentaCorriente)
-        {
-            monto -= monto * _comision;
-            _saldo += monto;
-        }
-    }
+    /*Depositar y Retirar son métodos que permiten modificar el saldo de la cuenta.
+public void Depositar(decimal monto)
+{
 
-    public void Retirar(decimal monto)
+    if (_tipo == TipoCuenta.CajaDeAhorro)
     {
-        if (_tipo == TipoCuenta.CajaDeAhorro)
+        _saldo += monto;
+    }
+    else if (_tipo == TipoCuenta.CuentaCorriente)
+    {
+        monto -= monto * _comision;
+        _saldo += monto;
+    }
+}
+
+public void Retirar(decimal monto)
+{
+    if (_tipo == TipoCuenta.CajaDeAhorro)
+    {
+        _saldo -= monto;
+    }
+    else if (_tipo == TipoCuenta.CuentaCorriente)
+    {
+        if (_saldo - monto >= -_limiteDeDescubierto)
         {
             _saldo -= monto;
         }
-        else if (_tipo == TipoCuenta.CuentaCorriente)
+        if (_saldo < 0)
         {
-            if (_saldo - monto >= -_limiteDeDescubierto)
-            {
-                _saldo -= monto;
-            }
-            if (_saldo < 0)
-            {
-                _estado = Estado.Suspendida;
-            }
+            _estado = Estado.Suspendida;
         }
     }
+}
 
-    public void AplicarInteres()
+public void AplicarInteres()
+{
+    if (_tipo == TipoCuenta.CajaDeAhorro)
     {
-        if (_tipo == TipoCuenta.CajaDeAhorro)
-        {
-            _saldo += _saldo * _tasaDeInteres;
-        }
+        _saldo += _saldo * _tasaDeInteres;
+    }
+}*/
+}
+public class CajaAhorro : CuentaBancaria
+{
+    public CajaAhorro(string numero, decimal saldo, string[] titulares) : base(numero, saldo, TipoCuenta.CajaDeAhorro, titulares)
+    {
+    }
+    private void Depositar(decimal monto)
+    {
+        _saldo += monto;
+    }
+    private void Retirar(decimal monto)
+    {
+        _saldo -= monto;
+    }
+    private void AplicarInteres()
+    {
+        _saldo += _saldo * _tasaDeInteres;
+    }
+}
+public class CuentaCorriente : CuentaBancaria
+{
+    public CuentaCorriente(string numero, decimal saldo, string[] titulares) : base(numero, saldo, TipoCuenta.CuentaCorriente, titulares)
+    {
+    }
+    private void Depositar(decimal monto)
+    {
+        monto -= monto * _comision;
+        _saldo += monto;
+    }
+    private void Retirar(decimal monto)
+    {
+        _saldo -= monto;
     }
 }
