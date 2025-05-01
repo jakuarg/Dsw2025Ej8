@@ -5,9 +5,8 @@ public class CuentaBancaria
     public TipoCuenta _tipo { get; private set; }
     public string _numero { get; private set; }
     public decimal _saldo { get; set; }
-    public Estado _estado { get; private set; }
     public decimal _tasaDeInteres { get; set; }
-    public decimal _limiteDeDescubierto { get; set; }
+    public Estado _estado { get; set; }
     public decimal _comision { get; set; }
     public string[] _titulares { get; private set; }
 
@@ -142,6 +141,7 @@ public class CajaAhorro : CuentaBancaria
 }
 public class CuentaCorriente : CuentaBancaria
 {
+    public decimal _limiteDeDescubierto { get; set; }
     public CuentaCorriente(string numero, decimal saldo, string[] titulares) : base(numero, saldo, TipoCuenta.CuentaCorriente, titulares)
     {
     }
@@ -153,5 +153,9 @@ public class CuentaCorriente : CuentaBancaria
     private void Retirar(decimal monto)
     {
         _saldo -= monto;
+        if (_saldo - monto >= -_limiteDeDescubierto)
+            _saldo -= monto;
+        if (_saldo < 0)
+            _estado = Estado.Suspendida;
     }
 }
