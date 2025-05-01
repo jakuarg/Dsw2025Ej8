@@ -2,19 +2,19 @@
 
 public class CuentaBancaria
 {
-    public TipoCuenta _tipo { get; private set; }
+    //public TipoCuenta _tipo { get; private set; }
     public string _numero { get; private set; }
     public decimal _saldo { get; set; }
-    public decimal _tasaDeInteres { get; set; }
     public Estado _estado { get; set; }
     public decimal _comision { get; set; }
     public string[] _titulares { get; private set; }
 
-    public CuentaBancaria(string numero, decimal saldo, TipoCuenta tipo, string[] titulares)
+    //public CuentaBancaria(string numero, decimal saldo, TipoCuenta tipo, string[] titulares)
+    public CuentaBancaria(string numero, decimal saldo, string[] titulares)
     {
         _numero = numero;
         _saldo = saldo;
-        _tipo = tipo;
+        //_tipo = tipo;
         _estado = Estado.Activa;
         _titulares = titulares;
     }
@@ -123,39 +123,44 @@ public void AplicarInteres()
 }
 public class CajaAhorro : CuentaBancaria
 {
-    public CajaAhorro(string numero, decimal saldo, string[] titulares) : base(numero, saldo, TipoCuenta.CajaDeAhorro, titulares)
+    public decimal _tasaDeInteres { get; internal set; }
+    public CajaAhorro(string numero, decimal saldo, string[] titulares) : base(numero, saldo, titulares)
     {
     }
-    private void Depositar(decimal monto)
+    public void Depositar(decimal monto)
     {
         _saldo += monto;
     }
-    private void Retirar(decimal monto)
+    public void Retirar(decimal monto)
     {
         _saldo -= monto;
     }
-    private void AplicarInteres()
+    public void AplicarInteres()
     {
         _saldo += _saldo * _tasaDeInteres;
     }
 }
 public class CuentaCorriente : CuentaBancaria
 {
-    public decimal _limiteDeDescubierto { get; set; }
-    public CuentaCorriente(string numero, decimal saldo, string[] titulares) : base(numero, saldo, TipoCuenta.CuentaCorriente, titulares)
+    public decimal _limiteDeDescubierto { get; internal set; }
+    public CuentaCorriente(string numero, decimal saldo, string[] titulares) : base(numero, saldo, titulares)
     {
     }
-    private void Depositar(decimal monto)
+    public void Depositar(decimal monto)
     {
         monto -= monto * _comision;
         _saldo += monto;
     }
-    private void Retirar(decimal monto)
+    public void Retirar(decimal monto)
     {
         _saldo -= monto;
         if (_saldo - monto >= -_limiteDeDescubierto)
             _saldo -= monto;
         if (_saldo < 0)
             _estado = Estado.Suspendida;
+    }
+    public void AplicarLimite(decimal valor)
+    {
+        _limiteDeDescubierto = valor;
     }
 }
