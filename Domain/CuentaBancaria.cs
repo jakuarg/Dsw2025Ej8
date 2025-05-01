@@ -2,14 +2,14 @@
 
 public class CuentaBancaria
 {
-    private TipoCuenta _tipo;
-    private string _numero;
-    private decimal _saldo;
-    private Estado _estado;
-    private decimal _tasaDeInteres;
-    private decimal _limiteDeDescubierto;
-    private decimal _comision;
-    private string[] _titulares;
+    public TipoCuenta _tipo { get; private set; }
+    public string _numero { get; private set; }
+    public decimal _saldo { get;private set; }
+    public Estado _estado { get; private set; }
+    public decimal _tasaDeInteres { get; private set; }
+    public decimal _limiteDeDescubierto { get; private set; }
+    public decimal _comision { get; private set; }
+    public string[] _titulares { get; private set; }
 
     public CuentaBancaria(string numero, decimal saldo, TipoCuenta tipo, string[] titulares)
     {
@@ -19,7 +19,7 @@ public class CuentaBancaria
         _estado = Estado.Activa;
         _titulares = titulares;
     }
-    #region Getters/Setters
+    /*#region Getters/Setters
     public string GetNumero()
     {
         return _numero;
@@ -78,7 +78,7 @@ public class CuentaBancaria
     {
         return _titulares;
     }
-    #endregion
+    #endregion*/
 
     public void Depositar(decimal monto)
     {
