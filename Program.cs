@@ -61,23 +61,23 @@ namespace Dsw2025Ej8
         static void ParteAhorro(CajaAhorro ca)
         {
             
-            ca._tasaDeInteres = 0.05m;
+            ca.TasaDeInteres = 0.05m;
             // Crear una nueva cuenta de ahorro
             while (true)
             {
                 Console.Clear();
-                if(ca._estado == Estado.Suspendida)
+                if(ca.Estado == Estado.Suspendida)
                 {
                     Console.WriteLine("La cuenta fue suspendida por falta de saldo");
                 }
                 Console.WriteLine("Caja De Ahorro");
-                Console.WriteLine($"La tasa de interés actual es: {ca._tasaDeInteres * 100}%");
-                Console.WriteLine($"Numero de cuenta: {ca._numero}");
-                for (int i = 0; i < ca._titulares.Length; i++)
+                Console.WriteLine($"La tasa de interés actual es: {ca.TasaDeInteres * 100}%");
+                Console.WriteLine($"Numero de cuenta: {ca.Numero}");
+                for (int i = 0; i < ca.Titulares.Length; i++)
                 {
-                    Console.WriteLine($"Nombre {i + 1} : {ca._titulares[i]}");
+                    Console.WriteLine($"Nombre {i + 1} : {ca.Titulares[i]}");
                 }
-                Console.WriteLine($"Su saldo es: ${ca._saldo}");
+                Console.WriteLine($"Su saldo es: ${ca.Saldo}");
                 Console.WriteLine("Ingrese la operación [0 para Depositar, y 1 para Retirar] ");
                 int? opcion = int.Parse(s: Console.ReadLine());
                 switch (opcion)
@@ -86,13 +86,13 @@ namespace Dsw2025Ej8
                         Console.WriteLine("Ingrese el monto a depositar: ");
                         decimal montoDeposito = Convert.ToDecimal(Console.ReadLine());
                         ca.Depositar(montoDeposito);
-                        Console.WriteLine($"Su nuevo saldo es: ${ca._saldo}");
+                        Console.WriteLine($"Su nuevo saldo es: ${ca.Saldo}");
                         break;
                     case 1:
                         Console.WriteLine("Ingrese el monto a retirar: ");
                         decimal montoRetiro = Convert.ToDecimal(Console.ReadLine());
                         ca.Retirar(montoRetiro);
-                        Console.WriteLine($"Su nuevo saldo es: ${ca._saldo}");
+                        Console.WriteLine($"Su nuevo saldo es: ${ca.Saldo}");
                         break;
                     default:
                         Console.WriteLine("Operación no válida");
@@ -105,26 +105,26 @@ namespace Dsw2025Ej8
         {
             
             //cc._tasaDeInteres = 0.05m;
-            cc._limiteDeDescubierto = 100;
-            cc._comision = 0.07m;
+            cc.LimiteDeDescubierto = 100;
+            cc.Comision = 0.07m;
             // Crear una nueva cuenta de ahorro
             while (true)
             {
                 Console.Clear();
-                if (cc._estado == Estado.Suspendida)
+                if (cc.Estado == Estado.Suspendida)
                 {
                     Console.WriteLine("La cuenta fue suspendida por falta de saldo");
                 }
                 Console.WriteLine("Cuenta Corriente");
-                Console.WriteLine($"La comisión es de {cc._comision * 100}%");
+                Console.WriteLine($"La comisión es de {cc.Comision * 100}%");
                 //Console.WriteLine($"La tasa de interés actual es: {cc._tasaDeInteres * 100}%");
-                Console.WriteLine($"El limite de descubierto es: ${cc._limiteDeDescubierto}");
-                Console.WriteLine($"Numero de cuenta: {cc._numero}");
-                for (int i = 0; i < cc._titulares.Length; i++)
+                Console.WriteLine($"El limite de descubierto es: ${cc.LimiteDeDescubierto}");
+                Console.WriteLine($"Numero de cuenta: {cc.Numero}");
+                for (int i = 0; i < cc.Titulares.Length; i++)
                 {
-                    Console.WriteLine($"Nombre {i + 1} : {cc._titulares[i]}");
+                    Console.WriteLine($"Nombre {i + 1} : {cc.Titulares[i]}");
                 }
-                Console.WriteLine($"Su saldo es: ${cc._saldo}");
+                Console.WriteLine($"Su saldo es: ${cc.Saldo}");
                 Console.WriteLine("Ingrese la operación [0 para Depositar, y 1 para Retirar] ");
                 int? opcion = int.Parse(s: Console.ReadLine());
                 switch (opcion)
@@ -133,13 +133,13 @@ namespace Dsw2025Ej8
                         Console.WriteLine("Ingrese el monto a depositar: ");
                         decimal montoDeposito = Convert.ToDecimal(Console.ReadLine());
                         cc.Depositar(montoDeposito);
-                        Console.WriteLine($"Su nuevo saldo es: ${cc._saldo}");
+                        Console.WriteLine($"Su nuevo saldo es: ${cc.Saldo}");
                         break;
                     case 1:
                         Console.WriteLine("Ingrese el monto a retirar: ");
                         decimal montoRetiro = Convert.ToDecimal(Console.ReadLine());
                         cc.Retirar(montoRetiro);
-                        Console.WriteLine($"Su nuevo saldo es: ${cc._saldo}");
+                        Console.WriteLine($"Su nuevo saldo es: ${cc.Saldo}");
                         break;
                     default:
                         Console.WriteLine("Operación no válida");

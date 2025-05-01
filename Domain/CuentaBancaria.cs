@@ -3,19 +3,21 @@ using static Excepciones;
 public class CuentaBancaria
 {
     //public TipoCuenta _tipo { get; private set; }
-    public string _numero { get; private set; }
-    public decimal _saldo { get; set; }
-    public Estado _estado { get; set; }
-    public string[] _titulares { get; private set; }
+    //public string _numero { get; private set; }
+    public string Numero { get; private set; }
+    public decimal Saldo { get; set; }
+    public Estado Estado { get; set; }
+    //public string[] _titulares { get; private set; }
+    public string[] Titulares { get; private set; }
 
     //public CuentaBancaria(string numero, decimal saldo, TipoCuenta tipo, string[] titulares)
     public CuentaBancaria(string numero, decimal saldo, string[] titulares)
     {
-        _numero = numero;
-        _saldo = saldo;
+        Numero = numero;
+        Saldo = saldo;
         //_tipo = tipo;
-        _estado = Estado.Activa;
-        _titulares = titulares;
+        Estado = Estado.Activa;
+        Titulares = titulares;
     }
     /*#region Getters/Setters
     public string GetNumero()
@@ -122,54 +124,54 @@ public void AplicarInteres()
 }
 public class CajaAhorro : CuentaBancaria
 {
-    public decimal _tasaDeInteres { get; internal set; }
+    public decimal TasaDeInteres { get; internal set; }
     public CajaAhorro(string numero, decimal saldo, string[] titulares) : base(numero, saldo, titulares)
     {
     }
     public void Depositar(decimal monto)
     {
-        if (_estado != Estado.Activa)
-            throw new CuentaNoActiva(_estado.ToString());
+        if (Estado != Estado.Activa)
+            throw new CuentaNoActiva(Estado.ToString());
         if (monto <= 0)
             throw new MontoNoValido();
-        _saldo += monto;
+        Saldo += monto;
     }
     public void Retirar(decimal monto)
     {
-        if (_estado != Estado.Activa)
+        if (Estado != Estado.Activa)
         {
-            throw new CuentaNoActiva(_estado.ToString());
+            throw new CuentaNoActiva(Estado.ToString());
         }
         else
         {
             if (monto <= 0)
                 throw new MontoNoValido();
-            if (monto > _saldo)
+            if (monto > Saldo)
             {
-                _estado = Estado.Suspendida;
+                Estado = Estado.Suspendida;
                 throw new SaldoInsuficiente();
             }
-            _saldo -= monto;
+            Saldo -= monto;
         }
         
     }
     public void AplicarInteres()
     {
-        _saldo += _saldo * _tasaDeInteres;
+        Saldo += Saldo * TasaDeInteres;
     }
 }
 public class CuentaCorriente : CuentaBancaria
 {
-    public decimal _limiteDeDescubierto { get; internal set; }
-    public decimal _comision { get; set; }
+    public decimal LimiteDeDescubierto { get; internal set; }
+    public decimal Comision { get; internal set; }
     public CuentaCorriente(string numero, decimal saldo, string[] titulares) : base(numero, saldo, titulares)
     {
     }
     public void Depositar(decimal monto)
     {
-        if (_estado != Estado.Activa)
+        if (Estado != Estado.Activa)
         {
-            throw new CuentaNoActiva(_estado.ToString());
+            throw new CuentaNoActiva(Estado.ToString());
         }
         else
         {
@@ -177,33 +179,33 @@ public class CuentaCorriente : CuentaBancaria
             {
                 throw new MontoNoValido();
             }
-            _saldo += monto - (monto * _comision);
+            Saldo += monto - (monto * Comision);
         }
     }
     public void Retirar(decimal monto)
     {
-        if (_estado != Estado.Activa)
+        if (Estado != Estado.Activa)
         {
-            throw new CuentaNoActiva(_estado.ToString());
+            throw new CuentaNoActiva(Estado.ToString());
         }
         else
         {
             if (monto <= 0)
                 throw new MontoNoValido();
 
-            if (monto > monto - (_saldo + _limiteDeDescubierto))
+            if (monto > monto - (Saldo + LimiteDeDescubierto))
             {
-                _estado = Estado.Suspendida;
+                Estado = Estado.Suspendida;
                 throw new SaldoInsuficiente();
             }
             else
             {
-                _saldo -= monto;
+                Saldo -= monto;
             }
         }
     }
     public void AplicarLimite(decimal valor)
     {
-        _limiteDeDescubierto = valor;
+        LimiteDeDescubierto = valor;
     }
 }
