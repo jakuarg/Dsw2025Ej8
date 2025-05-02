@@ -1,5 +1,4 @@
 ﻿using Dsw2025Ej8.Domain;
-using System.Security.Cryptography;
 
 namespace Dsw2025Ej8
 {
@@ -9,143 +8,115 @@ namespace Dsw2025Ej8
         {
             Menu();
         }
+
         static void Menu()
         {
-            CajaAhorro ca1 = new CajaAhorro("01", 0, ["Juan", "Pedro", "David"]);
-            CajaAhorro ca2 = new CajaAhorro("02", 100, ["Gabriel", "José"]);
-            CuentaCorriente cc1 = new CuentaCorriente("03", 50, ["Martina", "Daniela", "Estefania", "Belen"]);
-            CuentaCorriente cc2 = new CuentaCorriente("04", 200, ["Agustín"]);
+            // Crear cuentas
+            var cuentas = new List<CuentaBancaria>
+            {
+                new CajaAhorro      ("01", 0,   TipoCuenta.CajaDeAhorro,    new[] { "Juan",     "Pedro",    "David" })
+                    { TasaDeInteres = 0.05m },
+                new CajaAhorro      ("02", 100, TipoCuenta.CajaDeAhorro,    new[] { "Gabriel",  "José" })
+                    { TasaDeInteres = 0.03m },
+                new CuentaCorriente ("03", 50,  TipoCuenta.CuentaCorriente, new[] { "Martina",  "Daniela", "Estefania", "Belen" })
+                    { LimiteDeDescubierto = 100, Comision = 0.07m },
+                new CuentaCorriente ("04", 200, TipoCuenta.CuentaCorriente, new[] { "Agustín" })
+                    { LimiteDeDescubierto = 200, Comision = 0.05m }
+            };
+
             while (true)
             {
                 try
                 {
                     Console.Clear();
                     Console.WriteLine("Bienvenido al sistema de cuentas bancarias");
-                    Console.WriteLine("Qué cuenta desea operar? ");
-                    Console.WriteLine("\n 1: -Caja de Ahorro 1 \n 2: -Caja de Ahorro 2");
-                    Console.WriteLine("\n 3: -Cuenta Corriente 1 \n 4: -Cuenta Corriente 2");
-                    Console.WriteLine("----------------------------------------------------");
-                    int? opcion = int.Parse(s: Console.ReadLine());
-                    switch (opcion)
+                    Console.WriteLine("Seleccione una cuenta para operar:");
+                    for (int i = 0; i < cuentas.Count; i++)
                     {
-                        case 1:
-                            Console.WriteLine("Caja de Ahorro 1");
-                            ParteAhorro(ca1);
-                            break;
-                        case 2:
-                            Console.WriteLine("Caja de Ahorro 2");
-                            ParteAhorro(ca2);
-                            break;
-                        case 3:
-                            Console.WriteLine("Cuenta Corriente 1");
-                            ParteCorriente(cc1);
-                            break;
-                        case 4:
-                            Console.WriteLine("Cuenta Corriente 2");
-                            ParteCorriente(cc2);
-                            break;
-                        default:
-                            Console.WriteLine("Operación no válida");
-                            break;
+                        Console.WriteLine($"{i + 1}: {cuentas[i]._tipo}");
                     }
+                    Console.WriteLine("----------------------------------------------------");
+
+                    int opcion = int.Parse(Console.ReadLine() ?? throw new InvalidOperationException("Entrada inválida"));
+                    if (opcion < 1 || opcion > cuentas.Count)
+                    {
+                        Console.WriteLine("Operación no válida. Presione una tecla para continuar.");
+                        Console.ReadKey();
+                        continue;
+                    }
+
+                    OperarCuenta(cuentas[opcion - 1]);
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine($"Error: {e.Message}");
-                    Console.WriteLine("Ingrese una tecla para seguir");
+                    Console.WriteLine("Presione una tecla para continuar.");
                     Console.ReadKey();
                 }
+            }
+        }
 
-            }
-        }
-        static void ParteAhorro(CajaAhorro ca)
+        static void OperarCuenta(CuentaBancaria cuenta)
         {
-            
-            ca.TasaDeInteres = 0.05m;
-            // Crear una nueva cuenta de ahorro
             while (true)
             {
                 Console.Clear();
-                if(ca.Estado == Estado.Suspendida)
+                Console.WriteLine($"Su cuenta es de tipo: {cuenta._tipo}");
+                Console.WriteLine($"Número de cuenta: {cuenta.Numero}");
+                Console.WriteLine("Titulares:");
+                for (int i = 0; i < cuenta.Titulares.Length; i++)
                 {
-                    Console.WriteLine("La cuenta fue suspendida por falta de saldo");
+                    Console.WriteLine($"-{cuenta.Titulares[i]}");
                 }
-                Console.WriteLine("Caja De Ahorro");
-                Console.WriteLine($"La tasa de interés actual es: {ca.TasaDeInteres * 100}%");
-                Console.WriteLine($"Numero de cuenta: {ca.Numero}");
-                for (int i = 0; i < ca.Titulares.Length; i++)
+                Console.WriteLine($"Saldo: ${cuenta.Saldo}");
+                if(cuenta._tipo == TipoCuenta.CajaDeAhorro)
                 {
-                    Console.WriteLine($"Nombre {i + 1} : {ca.Titulares[i]}");
+                    Console.WriteLine($"Tasa de interés: {((CajaAhorro)cuenta).TasaDeInteres}");
                 }
-                Console.WriteLine($"Su saldo es: ${ca.Saldo}");
-                Console.WriteLine("Ingrese la operación [0 para Depositar, y 1 para Retirar] ");
-                int? opcion = int.Parse(s: Console.ReadLine());
+                else if (cuenta._tipo == TipoCuenta.CuentaCorriente)
+                {
+                    Console.WriteLine($"Límite de descubierto: ${((CuentaCorriente)cuenta).LimiteDeDescubierto}");
+                    Console.WriteLine($"Comisión: {((CuentaCorriente)cuenta).Comision}");
+                }
+
+                if (cuenta.Estado == Estado.Suspendida)
+                {
+                    Console.WriteLine("La cuenta fue suspendida por falta de saldo.");
+                    Console.WriteLine("Presione una tecla para continuar.");
+                    Console.ReadKey();
+                    break;
+                }
+
+                Console.WriteLine("Seleccione una operación:");
+                Console.WriteLine("0: Depositar");
+                Console.WriteLine("1: Retirar");
+                Console.WriteLine("2: Salir");
+                Console.WriteLine("----------------------------------------------------");
+
+                int opcion = int.Parse(Console.ReadLine() ?? throw new InvalidOperationException("Entrada inválida"));
                 switch (opcion)
                 {
                     case 0:
-                        Console.WriteLine("Ingrese el monto a depositar: ");
+                        Console.WriteLine("Ingrese el monto a depositar:");
                         decimal montoDeposito = Convert.ToDecimal(Console.ReadLine());
-                        ca.Depositar(montoDeposito);
-                        Console.WriteLine($"Su nuevo saldo es: ${ca.Saldo}");
+                        cuenta.Depositar(montoDeposito);
+                        Console.WriteLine($"Depósito exitoso. Su nuevo saldo es: ${cuenta.Saldo}");
                         break;
                     case 1:
-                        Console.WriteLine("Ingrese el monto a retirar: ");
+                        Console.WriteLine("Ingrese el monto a retirar:");
                         decimal montoRetiro = Convert.ToDecimal(Console.ReadLine());
-                        ca.Retirar(montoRetiro);
-                        Console.WriteLine($"Su nuevo saldo es: ${ca.Saldo}");
+                        cuenta.Retirar(montoRetiro);
+                        Console.WriteLine($"Retiro exitoso. Su nuevo saldo es: ${cuenta.Saldo}");
                         break;
+                    case 2:
+                        return;
                     default:
-                        Console.WriteLine("Operación no válida");
+                        Console.WriteLine("Operación no válida.");
                         break;
                 }
-                Console.WriteLine("¿Desea realizar otra operación? [S/N]");
-            }
-        }
-        static void ParteCorriente(CuentaCorriente cc)
-        {
-            
-            //cc._tasaDeInteres = 0.05m;
-            cc.LimiteDeDescubierto = 100;
-            cc.Comision = 0.07m;
-            // Crear una nueva cuenta de ahorro
-            while (true)
-            {
-                Console.Clear();
-                if (cc.Estado == Estado.Suspendida)
-                {
-                    Console.WriteLine("La cuenta fue suspendida por falta de saldo");
-                }
-                Console.WriteLine("Cuenta Corriente");
-                Console.WriteLine($"La comisión es de {cc.Comision * 100}%");
-                //Console.WriteLine($"La tasa de interés actual es: {cc._tasaDeInteres * 100}%");
-                Console.WriteLine($"El limite de descubierto es: ${cc.LimiteDeDescubierto}");
-                Console.WriteLine($"Numero de cuenta: {cc.Numero}");
-                for (int i = 0; i < cc.Titulares.Length; i++)
-                {
-                    Console.WriteLine($"Nombre {i + 1} : {cc.Titulares[i]}");
-                }
-                Console.WriteLine($"Su saldo es: ${cc.Saldo}");
-                Console.WriteLine("Ingrese la operación [0 para Depositar, y 1 para Retirar] ");
-                int? opcion = int.Parse(s: Console.ReadLine());
-                switch (opcion)
-                {
-                    case 0:
-                        Console.WriteLine("Ingrese el monto a depositar: ");
-                        decimal montoDeposito = Convert.ToDecimal(Console.ReadLine());
-                        cc.Depositar(montoDeposito);
-                        Console.WriteLine($"Su nuevo saldo es: ${cc.Saldo}");
-                        break;
-                    case 1:
-                        Console.WriteLine("Ingrese el monto a retirar: ");
-                        decimal montoRetiro = Convert.ToDecimal(Console.ReadLine());
-                        cc.Retirar(montoRetiro);
-                        Console.WriteLine($"Su nuevo saldo es: ${cc.Saldo}");
-                        break;
-                    default:
-                        Console.WriteLine("Operación no válida");
-                        break;
-                }
-                Console.WriteLine("¿Desea realizar otra operación? [S/N]");
+
+                Console.WriteLine("Presione una tecla para continuar.");
+                Console.ReadKey();
             }
         }
     }

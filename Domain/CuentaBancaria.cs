@@ -1,159 +1,67 @@
 ﻿namespace Dsw2025Ej8.Domain;
 using static Excepciones;
-public class CuentaBancaria
+public abstract class CuentaBancaria
 {
-    //public TipoCuenta _tipo { get; private set; }
-    //public string _numero { get; private set; }
+    //Propiedades
+    public TipoCuenta _tipo { get; private set; }
     public string Numero { get; private set; }
     public decimal Saldo { get; set; }
     public Estado Estado { get; set; }
-    //public string[] _titulares { get; private set; }
     public string[] Titulares { get; private set; }
-
-    //public CuentaBancaria(string numero, decimal saldo, TipoCuenta tipo, string[] titulares)
-    public CuentaBancaria(string numero, decimal saldo, string[] titulares)
+    //Constructor
+    public CuentaBancaria(string numero, decimal saldo, TipoCuenta tipo, string[] titulares)
     {
         Numero = numero;
         Saldo = saldo;
-        //_tipo = tipo;
+        _tipo = tipo;
         Estado = Estado.Activa;
         Titulares = titulares;
     }
-    /*#region Getters/Setters
-    public string GetNumero()
-    {
-        return _numero;
-    }
-
-    public decimal GetSaldo()
-    {
-        return _saldo;
-    }
-    public TipoCuenta GetTipo()
-    {
-        return _tipo;
-    }
-
-    public Estado GetEstado()
-    {
-        return _estado;
-    }
-
-    public void SetEstado(Estado estado)
-    {
-        _estado = estado;
-    }
-
-    public decimal GetTasaDeInteres()
-    {
-        return _tasaDeInteres;
-    }
-
-    public void SetTasaDeInteres(decimal tasaDeInteres)
-    {
-        _tasaDeInteres = tasaDeInteres;
-    }
-
-    public decimal GetLimiteDeDescubierto()
-    {
-        return _limiteDeDescubierto;
-    }
-
-    public void SetLimiteDeDescubierto(decimal limiteDeDescubierto)
-    {
-        _limiteDeDescubierto = limiteDeDescubierto;
-    }
-
-    public decimal GetComision()
-    {
-        return _comision;
-    }
-
-    public void SetComision(decimal comision)
-    {
-        _comision = comision;
-    }
-
-    public string[] GetTitulares()
-    {
-        return _titulares;
-    }
-    #endregion*/
-
-    /*Depositar y Retirar son métodos que permiten modificar el saldo de la cuenta.
-public void Depositar(decimal monto)
-{
-
-    if (_tipo == TipoCuenta.CajaDeAhorro)
-    {
-        _saldo += monto;
-    }
-    else if (_tipo == TipoCuenta.CuentaCorriente)
-    {
-        monto -= monto * _comision;
-        _saldo += monto;
-    }
-}
-
-public void Retirar(decimal monto)
-{
-    if (_tipo == TipoCuenta.CajaDeAhorro)
-    {
-        _saldo -= monto;
-    }
-    else if (_tipo == TipoCuenta.CuentaCorriente)
-    {
-        if (_saldo - monto >= -_limiteDeDescubierto)
-        {
-            _saldo -= monto;
-        }
-        if (_saldo < 0)
-        {
-            _estado = Estado.Suspendida;
-        }
-    }
-}
-
-public void AplicarInteres()
-{
-    if (_tipo == TipoCuenta.CajaDeAhorro)
-    {
-        _saldo += _saldo * _tasaDeInteres;
-    }
-}*/
+    //Métodos
+    public abstract void Depositar(decimal monto);
+    public abstract void Retirar(decimal monto);
 }
 public class CajaAhorro : CuentaBancaria
 {
+    //Propiedades
     public decimal TasaDeInteres { get; internal set; }
-    public CajaAhorro(string numero, decimal saldo, string[] titulares) : base(numero, saldo, titulares)
+    //Constructor
+    public CajaAhorro(string numero, decimal saldo, TipoCuenta tipo, string[] titulares)
+        : base(numero, saldo, tipo, titulares) { }
+    //Métodos
+    public override void Depositar(decimal monto)
     {
-    }
-    public void Depositar(decimal monto)
-    {
+        //Excepcion => Si la cuenta no está activa
         if (Estado != Estado.Activa)
             throw new CuentaNoActiva(Estado.ToString());
+        //Excepcion => Si el monto es menor o igual a 0
         if (monto <= 0)
             throw new MontoNoValido();
+        //Si no se generó ninguna excepción, deposito el monto
         Saldo += monto;
     }
-    public void Retirar(decimal monto)
+    public override void Retirar(decimal monto)
     {
+        //Excepcion => Si la cuenta no está activa
         if (Estado != Estado.Activa)
         {
             throw new CuentaNoActiva(Estado.ToString());
         }
         else
         {
+            //Excepcion => Si el monto es menor o igual a 0
             if (monto <= 0)
                 throw new MontoNoValido();
+            //Excepcion => Si el monto es mayor al saldo => la cuenta queda suspendida
             if (monto > Saldo)
             {
                 Estado = Estado.Suspendida;
                 throw new SaldoInsuficiente();
             }
+            //Si no se generó ninguna excepción, retiro el monto
             Saldo -= monto;
         }
-        
+
     }
     public void AplicarInteres()
     {
@@ -162,37 +70,44 @@ public class CajaAhorro : CuentaBancaria
 }
 public class CuentaCorriente : CuentaBancaria
 {
+    //Propiedades
     public decimal LimiteDeDescubierto { get; internal set; }
     public decimal Comision { get; internal set; }
-    public CuentaCorriente(string numero, decimal saldo, string[] titulares) : base(numero, saldo, titulares)
+    //Constructor
+    public CuentaCorriente(string numero, decimal saldo, TipoCuenta tipo, string[] titulares)
+        : base(numero, saldo, tipo, titulares) { }
+    //Métodos
+    public override void Depositar(decimal monto)
     {
-    }
-    public void Depositar(decimal monto)
-    {
+        //Excepcion => Si la cuenta no está activa
         if (Estado != Estado.Activa)
         {
             throw new CuentaNoActiva(Estado.ToString());
         }
         else
         {
+            //Excepcion => Si el monto es menor o igual a 0
             if (monto <= 0)
             {
                 throw new MontoNoValido();
             }
+            //Si no hay excepción, se deposita el monto menos la comisión
             Saldo += monto - (monto * Comision);
         }
     }
-    public void Retirar(decimal monto)
+    public override void Retirar(decimal monto)
     {
+        //Excepcion => Si la cuenta no está activa
         if (Estado != Estado.Activa)
         {
             throw new CuentaNoActiva(Estado.ToString());
         }
         else
         {
+            //Excepcion => Si el monto es menor o igual a 0
             if (monto <= 0)
                 throw new MontoNoValido();
-
+            //Excepcion => Si el monto es mayor al saldo + limite de descubierto => la cuenta queda suspendida
             if (monto > monto - (Saldo + LimiteDeDescubierto))
             {
                 Estado = Estado.Suspendida;
@@ -200,6 +115,7 @@ public class CuentaCorriente : CuentaBancaria
             }
             else
             {
+                //Si no se generó ninguna excepción, retiro el monto
                 Saldo -= monto;
             }
         }
